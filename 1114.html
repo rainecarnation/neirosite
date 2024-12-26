@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Output</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(to bottom, #001848, #000000);
+            background-size: cover;
+            color: #ffffff;
+        }
+        .avatar-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #333;
+            margin-bottom: 10px;
+        }
+        .output {
+            font-size: 1.2em;
+            color: #ffffff;
+        }
+        .input-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin: 10px 0;
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        textarea::placeholder {
+            color: #888;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="avatar-section">
+        <div class="avatar"></div>
+        <div class="output" id="output">The neural network's response will appear here.</div>
+    </div>
+    <div class="input-section">
+        <textarea id="inputData" placeholder="Enter input data..."></textarea><br>
+        <div class="button-group">
+            <button onclick="getNNOutput()">Get Output</button>
+            <button onclick="clearInput()">Clear Input</button>
+            <button onclick="resetOutput()">Reset Output</button>
+        </div>
+    </div>
+
+    <script>
+        async function getNNOutput() {
+            const inputData = document.getElementById('inputData').value;
+
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ input: inputData })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                document.getElementById('output').textContent = `Output: ${result.output}`;
+            } catch (error) {
+                document.getElementById('output').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('inputData').value = '';
+        }
+
+        function resetOutput() {
+            document.getElementById('output').textContent = 'The neural network\'s response will appear here.';
+        }
+    </script>
+</body>
+</html>
